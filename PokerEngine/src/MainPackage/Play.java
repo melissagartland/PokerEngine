@@ -5,20 +5,22 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import MainPackage.eGame;
+
 
 public class Play {
-		//@XmlElement
+		@XmlElement
 		private UUID GameID;
-		//@XmlElement
+		@XmlElement
 		private int MaxNumOfPlayers;
-		//@XmlElement
+		@XmlElement
 		private int NumOfCards;
-		//@XmlElement
+		@XmlElement
 		private int NumOfJokers;
-		//@XmlElement
+		@XmlElement
 		private ArrayList<Card> WildCards = new ArrayList<Card>();
 		
-		public GamePlay(Rule rle)
+		public Play(Rule rle)
 		{
 			this.GameID = UUID.randomUUID();
 			
@@ -50,4 +52,3 @@ public class Play {
 		}
 	}
 
-}

@@ -19,12 +19,12 @@ public final class Card{
 	public Card(eSuit suit, eRank rank){
 		Suit = suit;
 		Rank = rank;
-		Wild = false;
+		setWild(false);
 	}
-	public Card(eSuit suit, eRank rank, boolean Wild){
+	public Card(eSuit suit, eRank rank, int CardNbr){
 		Suit = suit;
 		Rank = rank;
-		this.Wild = Wild;
+		this.setWild(false);
 	}
 	//getter for rank
 	public eRank getRank(){
@@ -35,6 +35,9 @@ public final class Card{
 	}
 	public boolean getWild(){
 		return this.Wild = true;
+	}
+	public void setWild(boolean wild) {
+		Wild = wild;
 	}
 	// comparator method for sorting by rank
 	public static Comparator<Card> CardRank = new Comparator<Card> (){

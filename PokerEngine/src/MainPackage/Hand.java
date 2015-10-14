@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.UUID;
 
-//import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElement;
 
 import MainPackage.eCardNum;
 import MainPackage.eStrength;
@@ -12,16 +12,21 @@ import MainPackage.eRank;
 
 public class Hand {
 	private UUID playerID;
+	
+	@XmlElement
 	private ArrayList<Card> CardsInHand;
 	private ArrayList<Card> BestCardsInHand;
 	
+	@XmlElement
 	private int HandStrength;
-	
+	@XmlElement
 	private int HighHand;
-	
+	@XmlElement
 	private int LowHand;
-
+	@XmlElement
 	private int Kicker;
+	@XmlElement
+	private ArrayList<Card> Kickers = new ArrayList<Card>();
 	
 	private boolean bScored = false;
 	
