@@ -1,4 +1,5 @@
 package MainPackage;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,11 +13,11 @@ import MainPackage.eRank;
 
 public class Hand {
 	private UUID playerID;
-	
+
 	@XmlElement
 	private ArrayList<Card> CardsInHand;
 	private ArrayList<Card> BestCardsInHand;
-	
+
 	@XmlElement
 	private int HandStrength;
 	@XmlElement
@@ -27,71 +28,192 @@ public class Hand {
 	private int Kicker;
 	@XmlElement
 	private ArrayList<Card> Kickers = new ArrayList<Card>();
-	
+
 	private boolean bScored = false;
-	
+
 	private boolean Flush;
 	private boolean Straight;
 	private boolean Ace;
 	private static Deck dJoker = new Deck();
-	
-	public Hand(){
-		
+	private static Deck dWilds = new Deck();
+
+	public Hand() {
+
 	}
-	public void AddCardToHand(Card c){
-		if (this.CardsInHand == null){
+
+	public void AddCardToHand(Card c) {
+		if (this.CardsInHand == null) {
 			CardsInHand = new ArrayList<Card>();
 		}
 		this.CardsInHand.add(c);
 	}
-	public Card GetCardFromHand(int location){
+
+	public Card GetCardFromHand(int location) {
 		return CardsInHand.get(location);
 	}
-	public Hand(Deck d){
+
+	public Hand(Deck d) {
 		ArrayList<Card> Import = new ArrayList<Card>();
-		for (int x = 0; x<5; x++){
+		for (int x = 0; x < 5; x++) {
 			Import.add(d.drawFromDeck());
 		}
-		CardsInHand = Import;	
+		CardsInHand = Import;
 	}
-	public Hand(ArrayList<Card> setCards){
+
+	public Hand(ArrayList<Card> setCards) {
 		this.CardsInHand = setCards;
 	}
-	public ArrayList<Card> getCards(){
+
+	public ArrayList<Card> getCards() {
 		return CardsInHand;
 	}
-	public ArrayList<Card> getBestHand(){
+
+	public ArrayList<Card> getBestHand() {
 		return BestCardsInHand;
 	}
-	public void setPlayerID(UUID playerID){
+
+	public void setPlayerID(UUID playerID) {
 		this.playerID = playerID;
 	}
-	public UUID getPlayerID(){
+
+	public UUID getPlayerID() {
 		return playerID;
 	}
-	public void setBestHand(ArrayList<Card> BestHand){
+
+	public void setBestHand(ArrayList<Card> BestHand) {
 		this.BestCardsInHand = BestHand;
 	}
-	public int getHandStrength(){
+
+	public int getHandStrength() {
 		return HandStrength;
 	}
-	public int getKicker(){
+
+	public int getKicker() {
 		return Kicker;
 	}
-	public int getHighPairStrength(){
+
+	public int getHighPairStrength() {
 		return HighHand;
 	}
-	public int getLowPairStrenght(){
+
+	public int getLowPairStrenght() {
 		return LowHand;
 	}
-	public boolean getAce(){
+
+	public boolean getAce() {
 		return Ace;
 	}
-	public static Hand EvalHand(ArrayList<Card> SeededHand){
+
+	public static Hand EvalHand(ArrayList<Card> SeededHand) {
 		Deck d = new Deck();
 		Hand h = new Hand(d);
 		h.CardsInHand = SeededHand;
 		return h;
+	}
+
+	ArrayList<Hand> jokerHands = new ArrayList<Hand>();
+	ArrayList<Hand> wildHands = new ArrayList<Hand>();
+
+	public void Joker()
+	{
+		int numberOfJokers = 0;
+		
+		for ( int i = 0; i < 5; i++)
+		{
+			if (CardsInHand.get(i).getRank() == eRank.JOKER)
+				
+			{
+				numberOfJokers++;
+			}
+		}
+		Collections.sort(CardsInHand, Card.CardRank);
+		if (numberOfJokers != 0)
+		{
+			for (short i = 0; i <= 3; i++) {
+				eSuit SuitValue = eSuit.values()[i];			
+				for (short j = 0; j <= 12; j++) {
+					eRank RankValue = eRank.values()[j];				
+					Card NewCard = new Card(SuitValue,RankValue, (13 * i) + j+1);
+					CardsInHand.set(eCardNum.FirstCard.getCardNum(), NewCard);
+					Hand HandAdd = new Hand(CardsInHand);
+					jokerHands.add(HandAdd);
+				}
+			}
+					
+			for (short i=0; i<jokerHands.size(); i++)
+			{
+				jokerHands.get(i).EvalHand();
+			}
+			Collections.sort(jokerHands, HandRank);
+		}
+		if (numberOfJokers > 1){
+
+		Collections.sort(jokerHands, HandRank);
+			for (int i = 0; i < jokerHands.size(); i ++){
+				for (short x = 0; x <= 3; x++) {
+					eSuit SuitValue = eSuit.values()[i];			
+					for (short j = 0; j <= 12; j++) {
+						eRank RankValue = eRank.values()[j];				
+						Card NewCard = new Card(SuitValue,RankValue, (13 * i) + j+1);
+						CardsInHand.set(eCardNum.FirstCard.getCardNum(), NewCard);
+						ArrayList<Card> HandAdd = new Hand(CardsInHand);
+						HandAdd = CardsInHand;
+						jokerHands.add(HandAdd);
+					}
+				}
+			}
+		}
+	}
+
+	public void Wilds(){
+		int numberOfWilds = 0;
+		
+		for ( int i = 0; i < 5; i++)
+		{
+			if (CardsInHand.get(i).getRank() == eRank.JOKER)
+				
+			{
+				numberOfWilds++;
+			}
+		}
+		Collections.sort(CardsInHand, Card.CardRank);
+		if (numberOfWilds != 0)
+		{
+			for (short i = 0; i <= 3; i++) {
+				eSuit SuitValue = eSuit.values()[i];			
+				for (short j = 0; j <= 12; j++) {
+					eRank RankValue = eRank.values()[j];				
+					Card NewCard = new Card(SuitValue,RankValue, (13 * i) + j+1);
+					CardsInHand.set(eCardNum.FirstCard.getCardNum(), NewCard);
+					Hand HandAdd = new Hand(CardsInHand);
+					wildHands.add(HandAdd);
+				}
+			}
+					
+			for (short i=0; i<wildHands.size(); i++)
+			{
+				wildHands.get(i).EvalHand();
+			}
+			Collections.sort(wildHands, HandRank);
+		}
+		if (numberOfWilds > 1){
+
+		Collections.sort(wildHands, HandRank);
+			for (int i = 0; i < wildHands.size(); i ++){
+				for (short x = 0; x <= 3; x++) {
+					eSuit SuitValue = eSuit.values()[i];			
+					for (short j = 0; j <= 12; j++) {
+						eRank RankValue = eRank.values()[j];				
+						Card NewCard = new Card(SuitValue,RankValue, (13 * i) + j+1);
+						CardsInHand.set(eCardNum.FirstCard.getCardNum(), NewCard);
+						ArrayList<Card> HandAdd = new Hand(CardsInHand);
+						HandAdd = CardsInHand;
+						wildHands.add(HandAdd);
+					}
+				}
+			}
+		}
+		
 	}
 	public void EvalHand(){
 		Collections.sort(CardsInHand, Card.CardRank);
@@ -213,36 +335,46 @@ public class Hand {
 					CardsInHand.get(eCardNum.SecondCard.getCardNum()).getRank()
 					.getRank());
 		}
-		
-		private static void ScoreHand(eStrength hST, int HighHand, int LowHand, int Kicker){
-			this.HandStrength = hST.getStrength();
-			this.HighHand = HighHand;
-			this.LowHand = LowHand;
-			this.Kicker = Kicker;
-			this.bScored = true;
-		}
-		
-		public static Comparator<Hand> HandRank = new Comparator<Hand>(){
-			public int compare(Hand hand1, Hand hand2){
-				int result = 0;
-				result = hand2.getHandStrength()- hand1.getHandStrength();
-				if (result != 0){
-					return result;
-				}
-				result = hand2.getHighPairStrength()-hand1.getHighPairStrength();
-				if (result != 0){
-					return result;
-				}
-				result = hand2.getLowPairStrenght()-hand1.getLowPairStrenght();
-				if (result !=0){
-					return result;
-				}
-				result = hand2.getKicker()-hand1.getKicker();
-				if (result != 0){
-					return result;
-				}
-				return 0;
-			}
-		};
+
+	private void ScoreHand(eStrength highcard, int rank, int i, int rank2) {
+		// TODO Auto-generated method stub
+
 	}
+
+	private void ScoreHand(eStrength highcard) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private Hand(eStrength hST, int HighHand, int LowHand, int Kicker) {
+		this.HandStrength = hST.getStrength();
+		this.HighHand = HighHand;
+		this.LowHand = LowHand;
+		this.Kicker = Kicker;
+		this.bScored = true;
+	}
+
+	/**
+	 * Custom sort to figure the best hand in an array of hands
+	 */
+	public static Comparator<Hand> HandRank = new Comparator<Hand>() {
+
+			public int compare(Hand h1,Hand h2){
+
+	int result=0;
+
+	result=h2.getHandStrength()-h1.getHandStrength();
+
+	if(result!=0){return result;}
+
+	result=h2.getHighPairStrength()-h1.getHighPairStrength();if(result!=0){return result;}
+
+	result=h2.getLowPairStrength()-h1.getLowPairStrength();if(result!=0){return result;}
+
+	if(h2.getKicker().get(eCardNo.FirstCard.getCardNo())!=null){if(h1.getKicker().get(eCardNo.FirstCard.getCardNo())!=null){result=h2.getKicker().get(eCardNo.FirstCard.getCardNo()).getRank().getRank()-h1.getKicker().get(eCardNo.FirstCard.getCardNo()).getRank().getRank();}if(result!=0){return result;}}
+
+	if(h2.getKicker().get(eCardNo.SecondCard.getCardNo())!=null){if(h1.getKicker().get(eCardNo.SecondCard.getCardNo())!=null){result=h2.getKicker().get(eCardNo.SecondCard.getCardNo()).getRank().getRank()-h1.getKicker().get(eCardNo.SecondCard.getCardNo()).getRank().getRank();}if(result!=0){return result;}}if(h2.getKicker().get(eCardNo.ThirdCard.getCardNo())!=null){if(h1.getKicker().get(eCardNo.ThirdCard.getCardNo())!=null){result=h2.getKicker().get(eCardNo.ThirdCard.getCardNo()).getRank().getRank()-h1.getKicker().get(eCardNo.ThirdCard.getCardNo()).getRank().getRank();}if(result!=0){return result;}}
+
+	if(h2.getKicker().get(eCardNo.FourthCard.getCardNo())!=null){if(h1.getKicker().get(eCardNo.FourthCard.getCardNo())!=null){result=h2.getKicker().get(eCardNo.FourthCard.getCardNo()).getRank().getRank()-h1.getKicker().get(eCardNo.FourthCard.getCardNo()).getRank().getRank();}if(result!=0){return result;}}return 0;}};
+
 }
